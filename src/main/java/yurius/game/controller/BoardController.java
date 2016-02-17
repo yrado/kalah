@@ -16,12 +16,12 @@ public class BoardController {
     public TurnResult takeTurn(Player player, int houseNumber) {
         try {
             if (board.allHousesEmpty())
-                return new TurnResult(TurnStatus.GAME_OVER, getWinnerMessage());
+                return getGameOverStatus();
 
             LastSeedPlacement lastSeedPlacement = board.moveStones(player, houseNumber);
 
             if (board.allHousesEmpty())
-                return new TurnResult(TurnStatus.GAME_OVER);
+                return getGameOverStatus();
 
             Player nextPlayer = LastSeedPlacement.PLAYER_STORE == lastSeedPlacement ? player : player.getOther();
             return new TurnResult(
@@ -30,6 +30,10 @@ public class BoardController {
         } catch (EmptyCellException e) {
             return new TurnResult(TurnStatus.get(player));
         }
+    }
+
+    private TurnResult getGameOverStatus() {
+        return new TurnResult(TurnStatus.GAME_OVER, getWinnerMessage());
     }
 
     private String getWinnerMessage() {
