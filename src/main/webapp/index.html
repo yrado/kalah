@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="jquery-1.12.0.min.js"></script>
+</head>
+
+<body>
+	<div id='myPlayer'>
+	</div>
+    <div id='myTable'>
+	</div>
+    <div id='myMessage'>
+    </div>
+<script>
+
+pollInterval = 1000;
+my={};
+
+window.onload = function() {
+  var xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "/game/createOrJoin", true);
+	xhttp.send();
+    xhttp.onreadystatechange = function() {
+		if (xhttp.readyState == 4 && xhttp.status == 200) {
+		    var data = JSON.parse(xhttp.responseText);
+			my.gameId = data.gameId;
+			my.player = data.player;
+
+			myPlayer.innerHTML = 'You are ' + (my.player === 'FIRST' ? 'first' : 'second') + ' player';
+		};
+	}
+};
+
+(function poll(){
+   var pollHandle = setTimeout(function(){
+		var xhttp = new XMLHttpRequest();
+		xhttp.open("GET", "/game/" + my.gameId, true);
+		xhttp.send();
+		xhttp.onreadystatechange = function() {
+		if (xhttp.readyState == 4 && xhttp.status == 200) {
+			var data = JSON.parse(xhttp.responseText);
+
+			var row1 = (my.player === 'FIRST') ? data.board.secondPlayer : data.board.firstPlayer;
+			var row2 = (my.player === 'FIRST') ? data.board.firstPlayer : data.board.secondPlayer;
+			myTable.innerHTML = '';
+			myTable.appendChild(buildTable({"row1": row1, "row2" : row2}));
+
+			myMessage.innerHTML = data.message;
+
+			if (data.status === 'GAME_OVER')
+			    clearTimeout(pollHandle);
+		}
+  };
+
+        //Setup the next poll recursively
+        poll();
+      }, pollInterval);
+      //clearTimeout(pollHandle);
+})();
+
+function buildTable(data) {
+	var table = document.createElement('table');
+	var tbody = document.createElement('tbody');
+	table.appendChild(tbody);
+	tbody.appendChild(buildRow(data.row1, true));
+	tbody.appendChild(buildRow(data.row2, false));
+	
+	table.addEventListener('click', function(event) {
+		if (event.target.hasAttribute('data-argument')) {
+			var data = {};
+			data.player = my.player;
+			data.houseNumber = event.target.getAttribute('data-argument');
+			
+			var xhttp = new XMLHttpRequest();
+			xhttp.open("POST", "/game/" + my.gameId + "/makeMove", true);
+			xhttp.setRequestHeader("Content-type", "application/json");
+			xhttp.send(JSON.stringify(data));
+			xhttp.onreadystatechange = function() {
+				if (xhttp.readyState == 4 && xhttp.status == 200) {
+				}
+			};
+		}
+	});
+	
+	return table;
+}
+
+function buildRow(dataRow, firstRow) {
+	var row = document.createElement('tr');
+
+	if (firstRow)
+	    daraRow = dataRow.reverse();
+
+	if (!firstRow)
+	    row.appendChild(document.createElement('td'));
+
+    dataRow.forEach(function(dataCell, i) {
+		var cell = document.createElement('td');
+		var cellLink = document.createElement('a');
+
+		if (!firstRow)
+		    cellLink.setAttribute('data-argument', i + 1);
+		cellLink.innerHTML = dataCell;
+		cell.appendChild(cellLink);
+		row.appendChild(cell);
+    });
+
+    if (firstRow)
+	    row.appendChild(document.createElement('td'));
+    return row;
+}
+    </script>
+</body>
+</html>
