@@ -5,7 +5,9 @@ import org.eclipse.jetty.webapp.WebAppContext;
 
 public class GameLauncher {
     public static void main(String[] args) throws Exception {
-        Server server = new Server(8081);
+
+        int port = Integer.parseInt(System.getProperty("port", "8080"));
+        Server server = new Server(port);
 
         WebAppContext webAppContext = new WebAppContext("src/main/webapp", "/");
         webAppContext.setLogUrlOnStart(true);

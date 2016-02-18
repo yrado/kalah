@@ -43,8 +43,8 @@ window.onload = function() {
 		if (xhttp.readyState == 4 && xhttp.status == 200) {
 			var data = JSON.parse(xhttp.responseText);
 
-			var row1 = (my.player === 'FIRST') ? data.board.secondPlayer : data.board.firstPlayer;
-			var row2 = (my.player === 'FIRST') ? data.board.firstPlayer : data.board.secondPlayer;
+			var row1 = (my.player === 'FIRST') ? data.boardState.secondPlayer : data.boardState.firstPlayer;
+			var row2 = (my.player === 'FIRST') ? data.boardState.firstPlayer : data.boardState.secondPlayer;
 			myTable.innerHTML = '';
 			myTable.appendChild(buildTable({"row1": row1, "row2" : row2}));
 

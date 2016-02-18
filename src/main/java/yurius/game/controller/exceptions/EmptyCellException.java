@@ -1,4 +1,4 @@
-package yurius.game.model;
+package yurius.game.controller.exceptions;
 
 public class EmptyCellException extends Exception
 {

@@ -1,14 +1,16 @@
-package yurius.game.model;
+package yurius.game.controller;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
+import yurius.game.controller.exceptions.EmptyCellException;
+import yurius.game.model.Player;
 
 public class BoardTest
 {
-  private final IntFactory intFactory = new IntFactory(Board.NUM_TOTAL_CELLS);
+  private final IntFactory intFactory = new IntFactory(Constants.TOTAL_CELLS_COUNT);
 
   private Board board;
 

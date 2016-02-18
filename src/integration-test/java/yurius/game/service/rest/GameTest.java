@@ -17,11 +17,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import yurius.game.model.Player;
-import yurius.game.service.GameService;
-import yurius.game.service.rest.dto.GamePlayer;
-import yurius.game.service.rest.dto.GameState;
-import yurius.game.service.rest.dto.Move;
-import yurius.game.service.rest.dto.Status;
+import yurius.game.storage.GameStorageProvider;
+import yurius.game.model.GamePlayer;
+import yurius.game.model.GameState;
+import yurius.game.model.Move;
+import yurius.game.model.Status;
 
 public class GameTest extends JerseyTest
 {
@@ -37,8 +37,7 @@ public class GameTest extends JerseyTest
   public void setUp() throws Exception
   {
     super.setUp();
-    // FIXME IR should be removed
-    GameService.getInstance().clearState();
+    GameStorageProvider.getInstance().clear();
   }
 
   @Test
@@ -104,8 +103,8 @@ public class GameTest extends JerseyTest
     GameState gameState = target("/" + gameId.getGameId()).request(MediaType.APPLICATION_JSON_TYPE).get(GameState.class);
 
     // THEN
-    assertThat(gameState.getBoard().getFirstPlayer(), contains(6, 6, 6, 6, 6, 6, 0));
-    assertThat(gameState.getBoard().getSecondPlayer(), contains(6, 6, 6, 6, 6, 6, 0));
+    assertThat(gameState.getBoardState().getFirstPlayer(), contains(6, 6, 6, 6, 6, 6, 0));
+    assertThat(gameState.getBoardState().getSecondPlayer(), contains(6, 6, 6, 6, 6, 6, 0));
   }
 
   @Test
@@ -119,7 +118,7 @@ public class GameTest extends JerseyTest
 
     // THEN
     assertThat(gameState.getMessage(), is(notNullValue()));
-    assertThat(gameState.getBoard().getSecondPlayer(), contains(6, 6, 6, 6, 6, 6, 0));
+    assertThat(gameState.getBoardState().getSecondPlayer(), contains(6, 6, 6, 6, 6, 6, 0));
   }
 
   @Test
@@ -150,8 +149,8 @@ public class GameTest extends JerseyTest
 
     GameState gameState = target("/" + newGame.getGameId()).request().get(GameState.class);
     assertThat(gameState.getStatus(), is(Status.FIRST_PLAYER_TURN));
-    assertThat(gameState.getBoard().getFirstPlayer(), contains(0, 7, 7, 7, 7, 7, 1));
-    assertThat(gameState.getBoard().getSecondPlayer(), contains(6, 6, 6, 6, 6, 6, 0));
+    assertThat(gameState.getBoardState().getFirstPlayer(), contains(0, 7, 7, 7, 7, 7, 1));
+    assertThat(gameState.getBoardState().getSecondPlayer(), contains(6, 6, 6, 6, 6, 6, 0));
   }
 
   @Test
@@ -172,8 +171,8 @@ public class GameTest extends JerseyTest
 
     GameState gameState = target("/" + newGame.getGameId()).request().get(GameState.class);
     assertThat(gameState.getStatus(), is(Status.SECOND_PLAYER_TURN));
-    assertThat(gameState.getBoard().getFirstPlayer(), contains(6, 0, 7, 7, 7, 7, 1));
-    assertThat(gameState.getBoard().getSecondPlayer(), contains(7, 6, 6, 6, 6, 6, 0));
+    assertThat(gameState.getBoardState().getFirstPlayer(), contains(6, 0, 7, 7, 7, 7, 1));
+    assertThat(gameState.getBoardState().getSecondPlayer(), contains(7, 6, 6, 6, 6, 6, 0));
   }
 
   @Test

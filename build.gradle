@@ -2,9 +2,10 @@ group 'yurius'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
-apply plugin: 'war'
-apply plugin: 'jetty'
+//apply plugin: 'war'
+//apply plugin: 'jetty'
 
+defaultTasks 'run'
 
 sourceCompatibility = 1.8
 
@@ -31,7 +32,6 @@ sourceSets {
 dependencies {
     compile 'org.glassfish.jersey.core:jersey-server:2.22.1'
     compile 'org.glassfish.jersey.containers:jersey-container-servlet:2.22.1'
-//    compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.22.1'
     compile 'org.glassfish.jersey.media:jersey-media-moxy:2.22.1'
 
     compile 'org.eclipse.jetty:jetty-server:9.3.7.v20160115'
@@ -57,3 +57,9 @@ integrationTest.mustRunAfter test
 tasks.withType(Test) {
     reports.html.destination = file("${reporting.baseDir}/${name}")
 }
+
+task(run, dependsOn: 'classes', type: JavaExec) {
+            main = 'yurius.game.GameLauncher'
+            classpath = sourceSets.main.runtimeClasspath
+}
+

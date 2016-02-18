@@ -1,16 +1,18 @@
 package yurius.game.controller;
 
-import yurius.game.model.*;
+import yurius.game.controller.exceptions.EmptyCellException;
+import yurius.game.model.BoardState;
+import yurius.game.model.Player;
 
-public class BoardController {
+public class TurnController {
     private Board board;
 
-    public BoardController(Board board) {
+    TurnController(Board board) {
         this.board = board;
     }
 
-    public Board getBoard() {
-        return new Board(board);
+    public static TurnController create(BoardState boardState) {
+        return new TurnController(Board.create(boardState));
     }
 
     public TurnResult takeTurn(Player player, int houseNumber) {
@@ -45,5 +47,9 @@ public class BoardController {
         if (store2 > store1)
             return "Second player won!";
         return "It's a draw game!";
+    }
+
+    public BoardState getBoardState() {
+        return new BoardState(board.getPlayerPits(Player.FIRST), board.getPlayerPits(Player.SECOND));
     }
 }

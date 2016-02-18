@@ -1,10 +1,11 @@
-package yurius.game.model;
+package yurius.game.controller;
 
-import yurius.game.service.rest.dto.Status;
+import yurius.game.model.Player;
+import yurius.game.model.Status;
 
 public enum TurnStatus {
-    NEXT_FIRST_PLAYER(Status.FIRST_PLAYER_TURN),
-    NEXT_SECOND_PLAYER(Status.SECOND_PLAYER_TURN),
+    FIRST_PLAYER_TURN(Status.FIRST_PLAYER_TURN),
+    SECOND_PLAYER_TURN(Status.SECOND_PLAYER_TURN),
     GAME_OVER(Status.GAME_OVER);
 
     private final Status status;
@@ -18,6 +19,6 @@ public enum TurnStatus {
     }
 
     public static TurnStatus get(Player player) {
-        return player == Player.FIRST ? NEXT_FIRST_PLAYER : NEXT_SECOND_PLAYER;
+        return player == Player.FIRST ? FIRST_PLAYER_TURN : SECOND_PLAYER_TURN;
     }
 }

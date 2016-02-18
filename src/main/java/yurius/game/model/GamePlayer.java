@@ -1,6 +1,4 @@
-package yurius.game.service.rest.dto;
-
-import yurius.game.model.Player;
+package yurius.game.model;
 
 public class GamePlayer
 {

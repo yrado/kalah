@@ -1,106 +1,86 @@
 package yurius.game.service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
-import yurius.game.controller.BoardController;
-import yurius.game.model.TurnResult;
+import yurius.game.controller.TurnController;
+import yurius.game.controller.TurnResult;
 import yurius.game.model.Player;
-import yurius.game.service.rest.GameDoesNotExistException;
-import yurius.game.service.rest.WrongUserTurnException;
-import yurius.game.service.rest.dto.Board;
-import yurius.game.service.rest.dto.GamePlayer;
-import yurius.game.service.rest.dto.GameState;
-import yurius.game.service.rest.dto.Status;
+import yurius.game.storage.GameStorage;
+import yurius.game.service.rest.exceptions.GameDoesNotExistException;
+import yurius.game.service.rest.exceptions.WrongUserTurnException;
+import yurius.game.model.BoardState;
+import yurius.game.model.GamePlayer;
+import yurius.game.model.GameState;
+import yurius.game.model.Status;
 
 public class GameService
 {
+  private final GameStorage gameStorage;
 
-  private static GameService instance = new GameService();
-
-  private Map<String, GameState> games = new HashMap<>();
-
-  private GameState gameWaitingForPlayer;
-
-  public static GameService getInstance()
+  public GameService(GameStorage gameStorage)
   {
-    return instance;
+    this.gameStorage = gameStorage;
   }
 
-  private GameService()
+  public synchronized GamePlayer createOrJoin()
   {
-  }
-
-  public GamePlayer createOrJoin()
-  {
-    if (!waitingForOtherPlayer())
-    {
-      gameWaitingForPlayer = new GameState(
-          UUID.randomUUID().toString(),
-          Board.createDefault(),
-          Status.WAITING_FOR_SECOND_PLAYER,
-          "Waiting for second player");
-      games.put(gameWaitingForPlayer.getGameId(), gameWaitingForPlayer);
-      return new GamePlayer(gameWaitingForPlayer.getGameId(), Player.FIRST);
-    }
+    Optional<GameState> waitingGameOptional = gameStorage.findWaitingGame();
+    if (!waitingGameOptional.isPresent())
+      return new GamePlayer(createWaitingGame().getGameId(), Player.FIRST);
     else
-    {
-      GameState game = gameWaitingForPlayer;
-      gameWaitingForPlayer = null;
-      game.setStatus(Status.FIRST_PLAYER_TURN);
-      game.setMessage("Second player joined. First player can take their turn.");
-      return new GamePlayer(game.getGameId(), Player.SECOND);
-    }
+      return new GamePlayer(updateWaitingGame(waitingGameOptional.get()).getGameId(), Player.SECOND);
   }
 
-  private boolean waitingForOtherPlayer()
-  {
-    return gameWaitingForPlayer != null;
+  private GameState updateWaitingGame(GameState gameState) {
+    gameState.setStatus(Status.FIRST_PLAYER_TURN);
+    gameState.setMessage("Second player joined. First player can take their turn.");
+    gameStorage.update(gameState);
+    return gameState;
+  }
+
+  private GameState createWaitingGame() {
+    GameState gameWaitingForPlayer = new GameState(
+        UUID.randomUUID().toString(),
+        BoardState.createDefault(),
+        Status.WAITING_FOR_SECOND_PLAYER,
+        "Waiting for second player");
+    gameStorage.save(gameWaitingForPlayer);
+    return gameWaitingForPlayer;
   }
 
   public GameState getGame(String gameId) throws GameDoesNotExistException
   {
-    GameState gameState = games.get(gameId);
+    GameState gameState = gameStorage.retrieve(gameId);
     if (gameState == null)
       throw new GameDoesNotExistException();
     return gameState;
   }
 
-  public void clearState()
-  {
-    games.clear();
-    gameWaitingForPlayer = null;
-  }
-
   public void makeMove(String gameId, Player player, int houseNumber)
       throws GameDoesNotExistException, WrongUserTurnException
   {
-    // TODO IR check status
-    GameState game = getGame(gameId);
+    GameState gameState = getGame(gameId);
 
-    if (game.getStatus() == Status.GAME_OVER)
+    if (gameState.getStatus() == Status.GAME_OVER)
       return;
 
-    if (wrongUserTakingTurn(player, game))
+    if (wrongUserTakingTurn(player, gameState))
       throw new WrongUserTurnException();
 
-    if (turnWhileWaitingForSecondUser(game))
+    if (turnWhileWaitingForSecondUser(gameState))
       throw new WrongUserTurnException();
 
-    BoardController boardController = new BoardController(yurius.game.model.Board.create(game.getBoard()));
+    TurnController turnController = TurnController.create(gameState.getBoardState());
 
-    TurnResult turnResult = boardController.takeTurn(player, houseNumber);
+    TurnResult turnResult = turnController.takeTurn(player, houseNumber);
 
-    Board board = Board.create(boardController.getBoard());
+    BoardState boardState = turnController.getBoardState();
 
-    game.setBoard(board);
-    game.setStatus(turnResult.getStatus().getStatus());
-    game.setMessage(turnResult.getMessage());
-  }
-
-  private String createMessage(TurnResult turnResult) {
-    return null;
+    gameState.setBoardState(boardState);
+    gameState.setStatus(turnResult.getStatus().getStatus());
+    gameState.setMessage(turnResult.getMessage());
+    gameStorage.update(gameState);
   }
 
   private boolean turnWhileWaitingForSecondUser(GameState game) {

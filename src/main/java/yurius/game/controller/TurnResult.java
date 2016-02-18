@@ -1,4 +1,4 @@
-package yurius.game.model;
+package yurius.game.controller;
 
 
 public class TurnResult {
@@ -25,10 +25,10 @@ public class TurnResult {
             case GAME_OVER:
                 prefix.append("Game over");
                 break;
-            case NEXT_FIRST_PLAYER:
+            case FIRST_PLAYER_TURN:
                 prefix.append("First player's turn");
                 break;
-            case NEXT_SECOND_PLAYER:
+            case SECOND_PLAYER_TURN:
                 prefix.append("Second player's turn");
                 break;
             default:

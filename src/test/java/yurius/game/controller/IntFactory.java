@@ -1,4 +1,4 @@
-package yurius.game.model;
+package yurius.game.controller;
 
 import java.util.Arrays;
 

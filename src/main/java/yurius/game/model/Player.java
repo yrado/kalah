@@ -22,8 +22,4 @@ public enum Player
     return this == FIRST ? SECOND : FIRST;
   }
 
-  int getStoreIndex()
-  {
-    return this == FIRST ? 6 : 13;
-  }
 }
