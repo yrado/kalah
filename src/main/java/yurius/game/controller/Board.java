@@ -1,12 +1,12 @@
 package yurius.game.controller;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import yurius.game.controller.exceptions.EmptyCellException;
 import yurius.game.model.BoardState;
 import yurius.game.model.Player;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 class Board {
 
@@ -37,14 +37,13 @@ class Board {
         return new Board(array);
     }
 
-    private static void checkPlayer(List<Integer> playerCells, Player player)
-    {
+    private static void checkPlayer(List<Integer> playerCells, Player player) {
         if (playerCells.size() != Constants.PLAYER_CELLS_COUNT)
             throw new RuntimeException(String.format(
-                "Player %s has %d elements on the boards instead of %d",
-                player,
-                playerCells.size(),
-                Constants.PLAYER_CELLS_COUNT));
+                    "Player %s has %d elements on the boards instead of %d",
+                    player,
+                    playerCells.size(),
+                    Constants.PLAYER_CELLS_COUNT));
     }
 
     public LastSeedPlacement moveStones(final Player player, final int houseNumber) throws EmptyCellException {
@@ -60,13 +59,13 @@ class Board {
 
         cells[startCellIndex] = 0;
 
-        int houseShift = 0;
+        int storeShift = 0;
         int lastCellIndex = 0;
         for (int i = 1; i <= numStones; i++) {
-            int cellIndex = (startCellIndex + i + houseShift) % cells.length;
-            if (houseOfOtherPlayer(player, cellIndex)) {
+            int cellIndex = (startCellIndex + i + storeShift) % cells.length;
+            if (storeOfOtherPlayer(player, cellIndex)) {
                 cellIndex = (cellIndex + 1) % cells.length;
-                houseShift++;
+                storeShift++;
             }
 
             cells[cellIndex] = cells[cellIndex] + 1;
@@ -75,7 +74,7 @@ class Board {
                 lastCellIndex = cellIndex;
 
                 if (finishedInEmptyCell(lastCellIndex) && isPlayerHouse(player, lastCellIndex))
-                    grabStonesFromThisCellAndOpponnentsOppositeCell(player, lastCellIndex);
+                    grabStonesFromThisCellAndOpponentOppositeCell(player, lastCellIndex);
             }
         }
 
@@ -84,7 +83,7 @@ class Board {
         return getLastStonePlacement(player, lastCellIndex);
     }
 
-    private void grabStonesFromThisCellAndOpponnentsOppositeCell(Player player, int lastCellIndex) {
+    private void grabStonesFromThisCellAndOpponentOppositeCell(Player player, int lastCellIndex) {
         int storeIndex = player.getIndex() * Constants.PLAYER_CELLS_COUNT + Constants.PLAYER_CELLS_COUNT - 1;
 
         int oppositeCellIndex = Constants.TOTAL_CELLS_COUNT - 2 - lastCellIndex;
@@ -146,7 +145,7 @@ class Board {
         return LastSeedPlacement.PLAYER_STORE;
     }
 
-    private boolean houseOfOtherPlayer(final Player player, final int index) {
+    private boolean storeOfOtherPlayer(final Player player, final int index) {
         return index == getStoreIndex(player.getOther());
     }
 

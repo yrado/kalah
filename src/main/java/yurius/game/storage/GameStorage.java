@@ -9,9 +9,5 @@ public interface GameStorage {
 
     Optional<GameState> retrieve(String gameId);
 
-    void clear();
-
-    void update(GameState game);
-
     Optional<GameState> findWaitingGame();
 }

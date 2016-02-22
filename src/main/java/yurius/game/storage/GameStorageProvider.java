@@ -1,12 +1,13 @@
 package yurius.game.storage;
 
 public class GameStorageProvider {
-    private final static GameStorage instance = new GameStorageImpl();
+	private volatile static GameStorage instance = new GameStorageImpl();
 
-    public static GameStorage getInstance() {
-        return instance;
-    }
+	private GameStorageProvider() {
+	}
 
-    private GameStorageProvider() {
-    }
+	public static GameStorage getInstance() {
+		return instance;
+	}
+
 }
