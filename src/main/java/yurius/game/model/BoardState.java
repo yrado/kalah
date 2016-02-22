@@ -1,20 +1,17 @@
 package yurius.game.model;
 
+import yurius.game.controller.Constants;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import yurius.game.controller.Constants;
-
 public class BoardState {
-	private List<Integer> firstPlayer  = new ArrayList<>(Constants.PLAYER_CELLS_COUNT);
-	private List<Integer> secondPlayer = new ArrayList<>(Constants.PLAYER_CELLS_COUNT);
-
-	public BoardState() {
-	}
+	private final List<Integer> firstPlayer;
+	private final List<Integer> secondPlayer;
 
 	public BoardState(List<Integer> firstPlayer, List<Integer> secondPlayer) {
-		this.firstPlayer = firstPlayer;
-		this.secondPlayer = secondPlayer;
+		this.firstPlayer = new ArrayList<>(firstPlayer);
+		this.secondPlayer = new ArrayList<>(secondPlayer);
 	}
 
 	public BoardState(BoardState boardState) {
@@ -25,16 +22,8 @@ public class BoardState {
 		return firstPlayer;
 	}
 
-	public void setFirstPlayer(List<Integer> firstPlayer) {
-		this.firstPlayer = firstPlayer;
-	}
-
 	public List<Integer> getSecondPlayer() {
 		return secondPlayer;
-	}
-
-	public void setSecondPlayer(List<Integer> secondPlayer) {
-		this.secondPlayer = secondPlayer;
 	}
 
 	public static BoardState createDefault() {
@@ -59,8 +48,7 @@ public class BoardState {
 
 		BoardState that = (BoardState) o;
 
-		if (!firstPlayer.equals(that.firstPlayer)) return false;
-		return secondPlayer.equals(that.secondPlayer);
+		return firstPlayer.equals(that.firstPlayer) && secondPlayer.equals(that.secondPlayer);
 
 	}
 

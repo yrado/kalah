@@ -1,28 +1,26 @@
 package yurius.game.service.rest;
 
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.test.JerseyTest;
+import org.junit.Before;
+import org.junit.Test;
+import yurius.game.model.Player;
+import yurius.game.model.Status;
+import yurius.game.service.rest.dto.GamePlayer;
+import yurius.game.service.rest.dto.GameState;
+import yurius.game.service.rest.dto.Move;
+import yurius.game.storage.GameStorageImplFixture;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.test.JerseyTest;
-import org.junit.Before;
-import org.junit.Test;
-
-import yurius.game.model.GamePlayer;
-import yurius.game.model.GameState;
-import yurius.game.model.Move;
-import yurius.game.model.Player;
-import yurius.game.model.Status;
-import yurius.game.storage.GameStorageImplFixture;
-import yurius.game.storage.GameStorageProvider;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 
 public class GameRestServiceTest extends JerseyTest {
 

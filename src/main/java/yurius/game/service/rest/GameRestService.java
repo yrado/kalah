@@ -1,23 +1,17 @@
 package yurius.game.service.rest;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
+import yurius.game.service.GameService;
+import yurius.game.service.rest.dto.GamePlayer;
+import yurius.game.service.rest.dto.GameState;
+import yurius.game.service.rest.dto.Move;
 import yurius.game.service.rest.exceptions.GameDoesNotExistException;
 import yurius.game.service.rest.exceptions.WrongUserTurnException;
 import yurius.game.storage.GameStorageProvider;
-import yurius.game.service.GameService;
-import yurius.game.model.GamePlayer;
-import yurius.game.model.GameState;
-import yurius.game.model.Move;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

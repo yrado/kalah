@@ -1,13 +1,17 @@
-package yurius.game.model;
+package yurius.game.service.rest.dto;
 
 
-import java.util.UUID;
+import yurius.game.model.Status;
 
 public class GameState {
-    private final String gameId;
-    private final BoardState boardState;
-    private final Status status;
-    private final String message;
+    private String gameId;
+    private BoardState boardState;
+    private Status status;
+    private String message;
+
+    @SuppressWarnings("unused")
+    public GameState() {
+    }
 
     public GameState(String gameId, BoardState boardState, Status status, String message) {
         this.gameId = gameId;
@@ -16,24 +20,24 @@ public class GameState {
         this.message = message;
     }
 
-    public static GameState withSecondPlayerJoined(GameState gameState) {
-        return new GameState(
+    public GameState(yurius.game.model.GameState gameState) {
+        this(
                 gameState.getGameId(),
-                gameState.getBoardState(),
-                Status.FIRST_PLAYER_TURN,
-                "Second player joined. First player can take their turn.");
-    }
-
-    public static GameState createWaitingGame() {
-        return new GameState(
-                UUID.randomUUID().toString(),
-                BoardState.createDefault(),
-                Status.WAITING_FOR_SECOND_PLAYER,
-                "Waiting for second player");
+                new BoardState(gameState.getBoardState()),
+                gameState.getStatus(),
+                gameState.getMessage());
     }
 
     public Status getStatus() {
         return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
     }
 
     public String getGameId() {
@@ -42,6 +46,14 @@ public class GameState {
 
     public BoardState getBoardState() {
         return boardState;
+    }
+
+    public void setBoardState(BoardState boardState) {
+        this.boardState = boardState;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getMessage() {
@@ -70,3 +82,4 @@ public class GameState {
         return result;
     }
 }
+

@@ -1,9 +1,13 @@
 package yurius.game.storage;
 
-import java.util.Optional;
-
 import yurius.game.model.GameState;
 
+import java.util.Optional;
+
+/**
+ * Interface that represents storage for the game state.
+ *
+ * */
 public interface GameStorage {
     void save(GameState gameState);
 

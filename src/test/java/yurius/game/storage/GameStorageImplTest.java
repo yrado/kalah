@@ -1,19 +1,18 @@
 package yurius.game.storage;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.Optional;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import yurius.game.model.BoardState;
 import yurius.game.model.GameState;
 import yurius.game.model.Status;
 
+import java.util.Optional;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
 public class GameStorageImplTest {
-	private GameStorageImpl gameStorage;
+	private GameStorage gameStorage;
 
 	@Before
 	public void setUp() throws Exception {
@@ -23,7 +22,7 @@ public class GameStorageImplTest {
 	@Test
 	public void testSaveAndRetrieve() throws Exception {
 		// GIVEN
-		GameState gameState = new GameState("id1", new BoardState(), Status.WAITING_FOR_SECOND_PLAYER, "");
+		GameState gameState = new GameState("id1", BoardState.createDefault(), Status.WAITING_FOR_SECOND_PLAYER, "");
 		assertThat(gameStorage.retrieve("id1").isPresent(), is(false));
 
 		// WHEN
@@ -36,8 +35,8 @@ public class GameStorageImplTest {
 	@Test
 	public void testFindWaitingGame_gameExists() throws Exception {
 		// GIVEN
-		GameState gameState1 = new GameState("id1", new BoardState(), Status.FIRST_PLAYER_TURN, "");
-		GameState gameState2 = new GameState("id2", new BoardState(), Status.WAITING_FOR_SECOND_PLAYER, "");
+		GameState gameState1 = new GameState("id1", BoardState.createDefault(), Status.FIRST_PLAYER_TURN, "");
+		GameState gameState2 = new GameState("id2", BoardState.createDefault(), Status.WAITING_FOR_SECOND_PLAYER, "");
 		gameStorage.save(gameState1);
 		gameStorage.save(gameState2);
 
@@ -45,7 +44,7 @@ public class GameStorageImplTest {
 		Optional<GameState> waitingGame = gameStorage.findWaitingGame();
 
 		// THEN
-		assertThat(waitingGame.get().getGameId(), is("id2"));
+		assertThat(waitingGame.get(), is(gameState2));
 	}
 
 	@Test
