@@ -1,41 +1,69 @@
 package yurius.game.controller;
 
 import yurius.game.controller.exceptions.EmptyCellException;
-import yurius.game.model.BoardState;
+import yurius.game.model.GameState;
 import yurius.game.model.Player;
+import yurius.game.model.Status;
 
 public class TurnController {
-    private Board board;
+    private final String gameId;
+    private final Board board;
 
-    TurnController(Board board) {
+    TurnController(String gameId, Board board) {
+        this.gameId = gameId;
         this.board = board;
     }
 
-    public static TurnController create(BoardState boardState) {
-        return new TurnController(Board.create(boardState));
+    public static TurnController create(GameState gameState) {
+        return new TurnController(gameState.getGameId(), Board.create(gameState.getBoardState()));
     }
 
-    public TurnResult takeTurn(Player player, int houseNumber) {
+    private String getTurnMessage(Player player, String extraMessage) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(player.getText()).append(" player's turn");
+
+        if (extraMessage != null)
+            sb.append(": ").append(extraMessage);
+
+        sb.append(".");
+        return sb.toString();
+    }
+
+    public GameState takeTurn(Player player, int houseNumber) {
         try {
-            if (board.allHousesEmpty())
-                return getGameOverStatus();
+            if (board.isGameOver())
+                return getGameStateGameOver();
 
-            LastSeedPlacement lastSeedPlacement = board.moveStones(player, houseNumber);
+            boolean finishedInPlayerStore = board.moveStones(player, houseNumber);
 
-            if (board.allHousesEmpty())
-                return getGameOverStatus();
+            if (board.isGameOver())
+                return getGameStateGameOver();
 
-            Player nextPlayer = LastSeedPlacement.PLAYER_STORE == lastSeedPlacement ? player : player.getOther();
-            return new TurnResult(
-                    TurnStatus.get(nextPlayer),
-                    nextPlayer == player ? "one more turn." : null);
+            Player nextPlayer = finishedInPlayerStore ? player : player.getOther();
+            return getGameState(
+                    toNextPlayerStatus(nextPlayer),
+                    getTurnMessage(nextPlayer, nextPlayer == player ? "one more turn" : null));
         } catch (EmptyCellException e) {
-            return new TurnResult(TurnStatus.get(player));
+            return getGameState(
+                    toNextPlayerStatus(player),
+                    getTurnMessage(player, "cannot move stones from empty house. Please try again"));
         }
     }
 
-    private TurnResult getGameOverStatus() {
-        return new TurnResult(TurnStatus.GAME_OVER, getWinnerMessage());
+    private GameState getGameState(Status newStatus, String message) {
+        return new GameState(
+                gameId,
+                board.asBoardState(),
+                newStatus,
+                message);
+    }
+
+    private Status toNextPlayerStatus(Player player) {
+        return player == Player.FIRST ? Status.FIRST_PLAYER_TURN : Status.SECOND_PLAYER_TURN;
+    }
+
+    private GameState getGameStateGameOver() {
+        return getGameState(Status.GAME_OVER, getWinnerMessage());
     }
 
     private String getWinnerMessage() {
@@ -49,7 +77,4 @@ public class TurnController {
         return "It's a draw game!";
     }
 
-    public BoardState getBoardState() {
-        return new BoardState(board.getPlayerPits(Player.FIRST), board.getPlayerPits(Player.SECOND));
-    }
 }

@@ -14,10 +14,6 @@ public class BoardState {
 		this.secondPlayer = new ArrayList<>(secondPlayer);
 	}
 
-	public BoardState(BoardState boardState) {
-		this(new ArrayList<>(boardState.getFirstPlayer()), new ArrayList<>(boardState.getSecondPlayer()));
-	}
-
 	public List<Integer> getFirstPlayer() {
 		return firstPlayer;
 	}
@@ -27,7 +23,6 @@ public class BoardState {
 	}
 
 	public static BoardState createDefault() {
-
 		return new BoardState(createDefaultLayout(), createDefaultLayout());
 	}
 

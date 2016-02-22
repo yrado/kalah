@@ -46,7 +46,19 @@ class Board {
                     Constants.PLAYER_CELLS_COUNT));
     }
 
-    public LastSeedPlacement moveStones(final Player player, final int houseNumber) throws EmptyCellException {
+    public BoardState asBoardState() {
+        return new BoardState(getPlayerPits(Player.FIRST), getPlayerPits(Player.SECOND));
+    }
+
+    /**
+     * This method moves stones from specified house of the player to the other pits on the board according to the
+     * rules of the game.
+     *
+     * @param player      Player that takes turn
+     * @param houseNumber house number that move starts from
+     * @return true if last stone was placed in the player's house, otherwise - false.
+     */
+    public boolean moveStones(final Player player, final int houseNumber) throws EmptyCellException {
         if (houseNumber < 1 || houseNumber > Constants.HOUSE_CELLS_COUNT)
             throw new IllegalArgumentException(
                     String.format("House number must be between %d and %d. Got: %s.", 1, Constants.HOUSE_CELLS_COUNT, houseNumber));
@@ -131,7 +143,7 @@ class Board {
         return i == numStones;
     }
 
-    private LastSeedPlacement getLastStonePlacement(Player player, int lastCellIndex) {
+    private boolean getLastStonePlacement(Player player, int lastCellIndex) {
 
         if (Player.SECOND == player)
             lastCellIndex = (lastCellIndex + Constants.PLAYER_CELLS_COUNT) % Constants.TOTAL_CELLS_COUNT;
@@ -139,10 +151,10 @@ class Board {
         int playerStoreIndex = Constants.PLAYER_CELLS_COUNT - 1;
 
         if (lastCellIndex < playerStoreIndex)
-            return LastSeedPlacement.PLAYER_HOUSE;
+            return false;
         if (lastCellIndex > playerStoreIndex)
-            return LastSeedPlacement.OPPONENT_HOUSE;
-        return LastSeedPlacement.PLAYER_STORE;
+            return false;
+        return true;
     }
 
     private boolean storeOfOtherPlayer(final Player player, final int index) {
@@ -181,7 +193,7 @@ class Board {
         return result;
     }
 
-    public boolean allHousesEmpty() {
+    public boolean isGameOver() {
         int sum = 0;
         for (Player player : Player.values())
             for (int i = 0; i < Constants.HOUSE_CELLS_COUNT; i++)

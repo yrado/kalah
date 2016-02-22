@@ -18,10 +18,6 @@ public class BoardState {
         this.secondPlayer = secondPlayer;
     }
 
-    public BoardState(BoardState boardState) {
-        this(new ArrayList<>(boardState.getFirstPlayer()), new ArrayList<>(boardState.getSecondPlayer()));
-    }
-
     public BoardState(yurius.game.model.BoardState boardState) {
         this(boardState.getFirstPlayer(), boardState.getSecondPlayer());
     }

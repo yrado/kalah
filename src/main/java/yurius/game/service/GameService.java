@@ -1,7 +1,6 @@
 package yurius.game.service;
 
 import yurius.game.controller.TurnController;
-import yurius.game.controller.TurnResult;
 import yurius.game.model.GameState;
 import yurius.game.model.Player;
 import yurius.game.model.Status;
@@ -53,27 +52,23 @@ public class GameService {
             throws GameDoesNotExistException, WrongUserTurnException {
         GameState gameState = getGameInternal(gameId);
 
-        if (gameState.getStatus() == Status.GAME_OVER)
+        if (isGameOver(gameState))
             return;
 
         if (wrongUserTakingTurn(player, gameState))
             throw new WrongUserTurnException();
 
-        if (turnWhileWaitingForSecondUser(gameState))
+        if (waitingForSecondUser(gameState))
             throw new WrongUserTurnException();
 
-        TurnController turnController = TurnController.create(gameState.getBoardState());
-
-        TurnResult turnResult = turnController.takeTurn(player, houseNumber);
-
-        gameStorage.save(new GameState(
-                gameState.getGameId(),
-                turnController.getBoardState(),
-                turnResult.getStatus().getStatus(),
-                turnResult.getMessage()));
+        gameStorage.save(TurnController.create(gameState).takeTurn(player, houseNumber));
     }
 
-    private boolean turnWhileWaitingForSecondUser(GameState game) {
+    private boolean isGameOver(GameState gameState) {
+        return gameState.getStatus() == Status.GAME_OVER;
+    }
+
+    private boolean waitingForSecondUser(GameState game) {
         return game.getStatus() == Status.WAITING_FOR_SECOND_PLAYER;
     }
 

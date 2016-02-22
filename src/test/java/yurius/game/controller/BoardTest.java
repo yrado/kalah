@@ -1,15 +1,15 @@
 package yurius.game.controller;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
-import java.util.Arrays;
-
 import org.junit.Test;
 import yurius.game.controller.exceptions.EmptyCellException;
 import yurius.game.model.BoardState;
 import yurius.game.model.Player;
+
+import java.util.Arrays;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class BoardTest
 {
@@ -228,10 +228,10 @@ public class BoardTest
     board = new Board(new int[]{5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0});
 
     // WHEN
-    LastSeedPlacement result = board.moveStones(Player.FIRST, 1);
+    boolean isPlayerStore = board.moveStones(Player.FIRST, 1);
 
     //THEN
-    assertThat(result, is(LastSeedPlacement.PLAYER_HOUSE));
+    assertThat(isPlayerStore, is(false));
   }
 
   @Test
@@ -241,10 +241,10 @@ public class BoardTest
     board = new Board(new int[]{6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0});
 
     // WHEN
-    LastSeedPlacement result = board.moveStones(Player.FIRST, 1);
+    boolean isPlayerStore = board.moveStones(Player.FIRST, 1);
 
     //THEN
-    assertThat(result, is(LastSeedPlacement.PLAYER_STORE));
+    assertThat(isPlayerStore, is(true));
   }
 
   @Test
@@ -254,10 +254,10 @@ public class BoardTest
     board = new Board(new int[]{7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
 
     // WHEN
-    LastSeedPlacement result = board.moveStones(Player.FIRST, 1);
+    boolean isPlayerStore = board.moveStones(Player.FIRST, 1);
 
     //THEN
-    assertThat(result, is(LastSeedPlacement.OPPONENT_HOUSE));
+    assertThat(isPlayerStore, is(false));
   }
 
   @Test
@@ -267,10 +267,10 @@ public class BoardTest
     board = new Board(new int[]{13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
 
     // WHEN
-    LastSeedPlacement result = board.moveStones(Player.FIRST, 1);
+    boolean isPlayerStore = board.moveStones(Player.FIRST, 1);
 
     //THEN
-    assertThat(result, is(LastSeedPlacement.PLAYER_HOUSE));
+    assertThat(isPlayerStore, is(false));
   }
 
   @Test
@@ -280,10 +280,10 @@ public class BoardTest
     board = new Board(new int[]{0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0});
 
     // WHEN
-    LastSeedPlacement result = board.moveStones(Player.SECOND, 1);
+    boolean isPlayerStore = board.moveStones(Player.SECOND, 1);
 
     //THEN
-    assertThat(result, is(LastSeedPlacement.OPPONENT_HOUSE));
+    assertThat(isPlayerStore, is(false));
   }
 
   @Test
