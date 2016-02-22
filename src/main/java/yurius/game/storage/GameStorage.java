@@ -1,13 +1,13 @@
 package yurius.game.storage;
 
-import yurius.game.model.GameState;
-
 import java.util.Optional;
+
+import yurius.game.model.GameState;
 
 public interface GameStorage {
     void save(GameState gameState);
 
-    GameState retrieve(String gameId);
+    Optional<GameState> retrieve(String gameId);
 
     void clear();
 

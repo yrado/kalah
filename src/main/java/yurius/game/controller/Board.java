@@ -1,12 +1,12 @@
 package yurius.game.controller;
 
-import yurius.game.controller.exceptions.EmptyCellException;
-import yurius.game.model.BoardState;
-import yurius.game.model.Player;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import yurius.game.controller.exceptions.EmptyCellException;
+import yurius.game.model.BoardState;
+import yurius.game.model.Player;
 
 class Board {
 
@@ -25,17 +25,26 @@ class Board {
     }
 
     public static Board create(BoardState boardState) {
+        checkPlayer(boardState.getFirstPlayer(), Player.FIRST);
+        checkPlayer(boardState.getSecondPlayer(), Player.SECOND);
+
         int[] array = new int[Constants.TOTAL_CELLS_COUNT];
-
-        // TODO IR join for loops to one
         for (int i = 0; i < Constants.PLAYER_CELLS_COUNT; i++)
-            // TODO IR add range checks
             array[i] = boardState.getFirstPlayer().get(i);
-
         for (int i = 0; i < Constants.PLAYER_CELLS_COUNT; i++)
             array[i + Constants.PLAYER_CELLS_COUNT] = boardState.getSecondPlayer().get(i);
 
         return new Board(array);
+    }
+
+    private static void checkPlayer(List<Integer> playerCells, Player player)
+    {
+        if (playerCells.size() != Constants.PLAYER_CELLS_COUNT)
+            throw new RuntimeException(String.format(
+                "Player %s has %d elements on the boards instead of %d",
+                player,
+                playerCells.size(),
+                Constants.PLAYER_CELLS_COUNT));
     }
 
     public LastSeedPlacement moveStones(final Player player, final int houseNumber) throws EmptyCellException {
@@ -160,7 +169,6 @@ class Board {
         return Arrays.hashCode(cells);
     }
 
-    // TODO IR
     @Override
     public String toString() {
         return "Board{" + Arrays.toString(cells) + '}';

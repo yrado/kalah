@@ -4,8 +4,11 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 import yurius.game.controller.exceptions.EmptyCellException;
+import yurius.game.model.BoardState;
 import yurius.game.model.Player;
 
 public class BoardTest
@@ -399,5 +402,40 @@ public class BoardTest
     assertThat(Board.isPlayerHouse(Player.SECOND, 7), is(true));
     assertThat(Board.isPlayerHouse(Player.SECOND, 12), is(true));
     assertThat(Board.isPlayerHouse(Player.SECOND, 13), is(false));
+  }
+
+  @Test
+  public void testCreate_OK() throws Exception
+  {
+    // EXPECT
+    Board.create(new BoardState(Arrays.asList(1,2,3,4,5,6,7), Arrays.asList(1,2,3,4,5,6,7)));
+  }
+
+  @Test
+  public void testCreate_firstArrayShorter() throws Exception
+  {
+    // EXPECT
+    try
+    {
+      Board.create(new BoardState(Arrays.asList(1,2,3,4,5,6), Arrays.asList(1,2,3,4,5,6,7)));
+      fail();
+    }
+    catch (Exception ignored)
+    {
+    }
+  }
+
+  @Test
+  public void testCreate_secondArrayLonger() throws Exception
+  {
+    // EXPECT
+    try
+    {
+      Board.create(new BoardState(Arrays.asList(1,2,3,4,5,6,7), Arrays.asList(1,2,3,4,5,6,7,8)));
+      fail();
+    }
+    catch (Exception ignored)
+    {
+    }
   }
 }

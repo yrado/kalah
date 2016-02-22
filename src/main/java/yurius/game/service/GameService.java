@@ -51,10 +51,10 @@ public class GameService
 
   public GameState getGame(String gameId) throws GameDoesNotExistException
   {
-    GameState gameState = gameStorage.retrieve(gameId);
-    if (gameState == null)
+    Optional<GameState> gameState = gameStorage.retrieve(gameId);
+    if (!gameState.isPresent())
       throw new GameDoesNotExistException();
-    return gameState;
+    return gameState.get();
   }
 
   public void makeMove(String gameId, Player player, int houseNumber)
