@@ -389,19 +389,19 @@ public class BoardTest
   public void testIsPlayerHouse() throws Exception
   {
     // EXPECT
-    assertThat(Board.isPlayerHouse(Player.FIRST, 0), is(true));
-    assertThat(Board.isPlayerHouse(Player.FIRST, 5), is(true));
-    assertThat(Board.isPlayerHouse(Player.FIRST, 6), is(false));
-    assertThat(Board.isPlayerHouse(Player.FIRST, 7), is(false));
-    assertThat(Board.isPlayerHouse(Player.FIRST, 12), is(false));
-    assertThat(Board.isPlayerHouse(Player.FIRST, 13), is(false));
+    assertThat(Board.isPlayerHouse(0, Player.FIRST), is(true));
+    assertThat(Board.isPlayerHouse(5, Player.FIRST), is(true));
+    assertThat(Board.isPlayerHouse(6, Player.FIRST), is(false));
+    assertThat(Board.isPlayerHouse(7, Player.FIRST), is(false));
+    assertThat(Board.isPlayerHouse(12, Player.FIRST), is(false));
+    assertThat(Board.isPlayerHouse(13, Player.FIRST), is(false));
 
-    assertThat(Board.isPlayerHouse(Player.SECOND, 0), is(false));
-    assertThat(Board.isPlayerHouse(Player.SECOND, 5), is(false));
-    assertThat(Board.isPlayerHouse(Player.SECOND, 6), is(false));
-    assertThat(Board.isPlayerHouse(Player.SECOND, 7), is(true));
-    assertThat(Board.isPlayerHouse(Player.SECOND, 12), is(true));
-    assertThat(Board.isPlayerHouse(Player.SECOND, 13), is(false));
+    assertThat(Board.isPlayerHouse(0, Player.SECOND), is(false));
+    assertThat(Board.isPlayerHouse(5, Player.SECOND), is(false));
+    assertThat(Board.isPlayerHouse(6, Player.SECOND), is(false));
+    assertThat(Board.isPlayerHouse(7, Player.SECOND), is(true));
+    assertThat(Board.isPlayerHouse(12, Player.SECOND), is(true));
+    assertThat(Board.isPlayerHouse(13, Player.SECOND), is(false));
   }
 
   @Test

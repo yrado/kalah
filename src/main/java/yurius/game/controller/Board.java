@@ -61,7 +61,10 @@ class Board {
     public boolean moveStones(final Player player, final int houseNumber) throws EmptyCellException {
         if (houseNumber < 1 || houseNumber > Constants.HOUSE_CELLS_COUNT)
             throw new IllegalArgumentException(
-                    String.format("House number must be between %d and %d. Got: %s.", 1, Constants.HOUSE_CELLS_COUNT, houseNumber));
+                    String.format(
+                            "House number must be between %d and %d. Got: %s.",
+                            1,
+                            Constants.HOUSE_CELLS_COUNT, houseNumber));
 
         int startCellIndex = player.getIndex() * Constants.PLAYER_CELLS_COUNT + houseNumber - 1;
         int numStones = cells[startCellIndex];
@@ -70,64 +73,62 @@ class Board {
             throw new EmptyCellException("Cannot move stones from empty cell");
 
         cells[startCellIndex] = 0;
-
-        int storeShift = 0;
-        int lastCellIndex = 0;
         for (int i = 1; i <= numStones; i++) {
-            int cellIndex = (startCellIndex + i + storeShift) % cells.length;
-            if (storeOfOtherPlayer(player, cellIndex)) {
-                cellIndex = (cellIndex + 1) % cells.length;
-                storeShift++;
-            }
-
-            cells[cellIndex] = cells[cellIndex] + 1;
-
-            if (isLastCell(numStones, i)) {
-                lastCellIndex = cellIndex;
-
-                if (finishedInEmptyCell(lastCellIndex) && isPlayerHouse(player, lastCellIndex))
-                    grabStonesFromThisCellAndOpponentOppositeCell(player, lastCellIndex);
-            }
+            incrementCell(getCellIndex(startCellIndex, i, player));
         }
 
-        moveStonesIfEmptyHouses();
+        int lastCellIndex = getCellIndex(startCellIndex, numStones, player);
+        if (finishedInEmptyCell(lastCellIndex) && isPlayerHouse(lastCellIndex, player))
+            moveStonesFromThisCellAndOpponentOppositeCellToStore(lastCellIndex, player);
 
-        return getLastStonePlacement(player, lastCellIndex);
+        if (isGameOver())
+            moveHousesToStores();
+
+        return isPlayerStore(player, lastCellIndex);
     }
 
-    private void grabStonesFromThisCellAndOpponentOppositeCell(Player player, int lastCellIndex) {
-        int storeIndex = player.getIndex() * Constants.PLAYER_CELLS_COUNT + Constants.PLAYER_CELLS_COUNT - 1;
+    private void incrementCell(int cellIndex) {
+        cells[cellIndex] = cells[cellIndex] + 1;
+    }
 
-        int oppositeCellIndex = Constants.TOTAL_CELLS_COUNT - 2 - lastCellIndex;
-        cells[storeIndex] = cells[storeIndex] + cells[lastCellIndex] + cells[oppositeCellIndex];
+    private int getCellIndex(int startCellIndex, int numStones, Player player) {
+        int storeShift = 0;
+        for (int i = 1; i <= numStones; i++) {
+            if (isPlayerStore(player.getOther(), (startCellIndex + i + storeShift) % cells.length)) {
+                storeShift++;
+            }
+        }
+        return (startCellIndex + numStones + storeShift) % cells.length;
+    }
 
-        cells[lastCellIndex] = 0;
+    private void moveStonesFromThisCellAndOpponentOppositeCellToStore(int playerCell, Player player) {
+        int storeIndex = getStoreIndex(player);
+
+        int oppositeCellIndex = Constants.TOTAL_CELLS_COUNT - 2 - playerCell;
+        cells[storeIndex] = cells[storeIndex] + cells[playerCell] + cells[oppositeCellIndex];
+
+        cells[playerCell] = 0;
         cells[oppositeCellIndex] = 0;
     }
 
-    private boolean moveStonesIfEmptyHouses() {
-        for (Player player : Player.values()) {
-            if (playerHousesEmpty(player)) {
-                moveHouseToStore(player.getOther());
-                return true;
-            }
-        }
-        return false;
+    private void moveHousesToStores() {
+        moveHousesToStore(Player.FIRST);
+        moveHousesToStore(Player.SECOND);
     }
 
-    static boolean isPlayerHouse(Player player, int cellIndex) {
+    static boolean isPlayerHouse(int cellIndex, Player player) {
         int houseStartIndex = player.getIndex() * Constants.PLAYER_CELLS_COUNT;
         return houseStartIndex <= cellIndex && cellIndex < houseStartIndex + Constants.HOUSE_CELLS_COUNT;
     }
 
-    private void moveHouseToStore(Player player) {
+    private void moveHousesToStore(Player player) {
         for (int i = player.getIndex() * Constants.PLAYER_CELLS_COUNT; i < player.getIndex() * Constants.PLAYER_CELLS_COUNT + Constants.PLAYER_CELLS_COUNT - 1; i++) {
             cells[player.getIndex() * Constants.PLAYER_CELLS_COUNT + Constants.PLAYER_CELLS_COUNT - 1] = cells[player.getIndex() * Constants.PLAYER_CELLS_COUNT + Constants.PLAYER_CELLS_COUNT - 1] + cells[i];
             cells[i] = 0;
         }
     }
 
-    private boolean playerHousesEmpty(Player player) {
+    private boolean isGameOver(Player player) {
         int sum = 0;
         for (int i = player.getIndex() * Constants.PLAYER_CELLS_COUNT; i < player.getIndex() * Constants.PLAYER_CELLS_COUNT + Constants.HOUSE_CELLS_COUNT; i++)
             sum += cells[i];
@@ -139,26 +140,8 @@ class Board {
         return cells[cellIndex] == 1;
     }
 
-    private boolean isLastCell(int numStones, int i) {
-        return i == numStones;
-    }
-
-    private boolean getLastStonePlacement(Player player, int lastCellIndex) {
-
-        if (Player.SECOND == player)
-            lastCellIndex = (lastCellIndex + Constants.PLAYER_CELLS_COUNT) % Constants.TOTAL_CELLS_COUNT;
-
-        int playerStoreIndex = Constants.PLAYER_CELLS_COUNT - 1;
-
-        if (lastCellIndex < playerStoreIndex)
-            return false;
-        if (lastCellIndex > playerStoreIndex)
-            return false;
-        return true;
-    }
-
-    private boolean storeOfOtherPlayer(final Player player, final int index) {
-        return index == getStoreIndex(player.getOther());
+    private boolean isPlayerStore(Player player, final int index) {
+        return (index % cells.length) == getStoreIndex(player);
     }
 
     private int getStoreIndex(Player player) {
@@ -194,12 +177,7 @@ class Board {
     }
 
     public boolean isGameOver() {
-        int sum = 0;
-        for (Player player : Player.values())
-            for (int i = 0; i < Constants.HOUSE_CELLS_COUNT; i++)
-                sum += cells[player.getIndex() * Constants.PLAYER_CELLS_COUNT + i];
-
-        return sum == 0;
+        return isGameOver(Player.FIRST) || isGameOver(Player.SECOND);
     }
 
     public int getStore(Player first) {

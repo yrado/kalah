@@ -74,9 +74,21 @@ public class TurnControllerTest {
     }
 
     @Test
+    public void testTakeTurn_gameOverSecondPlayerTakesTurn() throws Exception {
+        // GIVEN
+        turnController = new TurnController("id", new Board(new int[]{0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1}));
+
+        // WHEN
+        result = turnController.takeTurn(Player.SECOND, 1);
+
+        //THEN
+        assertThat(result.getStatus(), is(Status.GAME_OVER));
+    }
+
+    @Test
     public void testTakeTurn_gameOverFirstPlayerWins() throws Exception {
         // GIVEN
-        turnController = new TurnController("id", new Board(new int[]{0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1}));
+        turnController = new TurnController("id", new Board(new int[]{0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0}));
 
         // WHEN
         result = turnController.takeTurn(Player.FIRST, 6);
@@ -100,7 +112,7 @@ public class TurnControllerTest {
     @Test
     public void testTakeTurn_gameOverDrawGame() throws Exception {
         // GIVEN
-        turnController = new TurnController("id", new Board(new int[]{0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 2}));
+        turnController = new TurnController("id", new Board(new int[]{0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1}));
 
         // WHEN
         result = turnController.takeTurn(Player.FIRST, 6);

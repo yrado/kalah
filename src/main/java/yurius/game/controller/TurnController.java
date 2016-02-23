@@ -18,17 +18,6 @@ public class TurnController {
         return new TurnController(gameState.getGameId(), Board.create(gameState.getBoardState()));
     }
 
-    private String getTurnMessage(Player player, String extraMessage) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(player.getText()).append(" player's turn");
-
-        if (extraMessage != null)
-            sb.append(": ").append(extraMessage);
-
-        sb.append(".");
-        return sb.toString();
-    }
-
     public GameState takeTurn(Player player, int houseNumber) {
         try {
             if (board.isGameOver())
@@ -48,6 +37,17 @@ public class TurnController {
                     toNextPlayerStatus(player),
                     getTurnMessage(player, "cannot move stones from empty house. Please try again"));
         }
+    }
+
+    private String getTurnMessage(Player player, String extraMessage) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(player.getText()).append(" player's turn");
+
+        if (extraMessage != null)
+            sb.append(": ").append(extraMessage);
+
+        sb.append(".");
+        return sb.toString();
     }
 
     private GameState getGameState(Status newStatus, String message) {
