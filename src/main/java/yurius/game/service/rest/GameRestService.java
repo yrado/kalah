@@ -34,6 +34,7 @@ public class GameRestService {
     @GET
     @Path("/{gameId}")
     public GameState get(@PathParam("gameId") String gameId) {
+        // TODO add exception mapper
         try {
             return getService().getGame(gameId);
         }
@@ -48,6 +49,7 @@ public class GameRestService {
             @PathParam("gameId") String gameId,
             Move move
     ) {
+        // TODO add exception mapper
         try {
             getService().makeMove(gameId, move.getPlayer(), move.getHouseNumber());
             return Response.status(Status.OK).build();
